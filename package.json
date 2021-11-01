@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "shadow-cljs watch app",
-    "repl": "shadow-cljs cljs-repl app"
+    "repl": "shadow-cljs cljs-repl app",
+    "test": "shadow-cljs "
   },
   "devDependencies": {
     "shadow-cljs": "2.15.10"
