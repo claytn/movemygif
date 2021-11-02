@@ -9,6 +9,11 @@
 (declare home)
 (defnc home []
 
+  ;; TODO: 
+  ;; - FIREFOX SUPPORT
+  ;; - mobile improvements
+  ;; - split up select & display pages
+  ;; - 
 
   (let [[search set-search!] (hooks/use-state "")
         [gp set-gp!] (hooks/use-state nil)
@@ -32,7 +37,7 @@
      (d/div
       {:style {:position "absolute" :right 10 :top 5}}
       (d/p  "movemygif v0.1")
-      (d/a {:href "" :style {:float "right"}} "source"))
+      (d/a {:href "https://github.com/claytn/movemygif" :style {:float "right"}} "source"))
 
      (if gp
        (d/div
@@ -67,7 +72,6 @@
                (d/div {:class "gif-search-wrapper"}
                       (d/input {:class "gif-search"
                                 :name "url"
-                                :placeholder "(https://media.giphy.com/media/.../giphy.gif)"
                                 :value search
                                 :on-change #(set-search! (.. %
                                                              -target
