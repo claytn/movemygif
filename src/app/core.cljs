@@ -1,19 +1,8 @@
 (ns app.core
   (:require
    ["react-dom" :as rdom]
-   [helix.core :refer [$ defnc]]
-   [helix.hooks :as hooks]
+   [helix.core :refer [$]]
    [app.pages.home :refer [home]]))
-
-
-(declare app)
-(defnc app []
-  
-  (let [[page set-page!] (hooks/use-state :pick)]
-    (case page
-      :pick "pick page"
-      :display "display page")))
-
 
 
 (defn ^:dev/after-load start []
