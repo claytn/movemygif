@@ -61,7 +61,6 @@ function detectMovement(cv, video, canvas, onMoveChange) {
       morphed.copyTo(lastFrame);
     }
 
-    // Diff the two images
     const delta = new cv.Mat();
     cv.absdiff(morphed, lastFrame, delta);
 
@@ -93,9 +92,7 @@ function detectMovement(cv, video, canvas, onMoveChange) {
         move = PAUSE;
       }
 
-      if (move) {
-        onMoveChange(move);
-      }
+      onMoveChange(move);
     }
 
     lastArea = maxArea;

@@ -89,7 +89,7 @@
     ;; Stop any existing trackers
     (stop!))
   
-  (let [t (js/headtrackr.Tracker. #js {:ui true :debug canvas})]
+  (let [t (js/headtrackr.Tracker. #js {:ui false :debug canvas})]
     (.init t video canvas)
 
     (.addEventListener
