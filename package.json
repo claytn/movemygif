@@ -5,7 +5,7 @@
   "scripts": {
     "start": "shadow-cljs watch app",
     "repl": "shadow-cljs cljs-repl app",
-    "test": "shadow-cljs",
+    "test": "shadow-cljs compile test",
     "build": "shadow-cljs compile app"
   },
   "devDependencies": {

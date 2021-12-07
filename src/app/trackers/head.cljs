@@ -6,15 +6,6 @@
 (def FROM_PAUSE_THRESHOLD 1)
 (def FROM_MOVE_THRESHOLD 1)
 
-(def DEBUG false)
-
-(defn db-log [& attrs]
-  (if DEBUG
-    (let [message (apply str (conj attrs "[DEBUG] "))
-          border (apply str (repeat (count message) "-"))]
-      (prn message)
-      (prn border))))
-
 (def motion (atom :pause))
 
 ;; Last depth of subject in camera
@@ -60,7 +51,6 @@
    a length of X, select the median of the z-index values and
    consider this the next 'move' by the subject"
   [detection on-move-change]
-  (db-log "detection!")
   (let [mvs @movements
         pos (.-z detection)]
     (if (= (count mvs) MOVEMENT_BUF_SIZE)
@@ -74,21 +64,7 @@
 
       (swap! movements conj pos))))
 
-(defn stop! []
-  (if-let [^js t @tracker]
-    (do
-      (.stopStream t)
-      (.stop t)
-      
-      (reset! tracker nil))
-
-    (prn "Error: Cannot stop tracker before starting")))
-
-(defn start! [{:keys [video canvas on-move-change]}]
-  (if @tracker
-    ;; Stop any existing trackers
-    (stop!))
-  
+(defn start! [{:keys [video canvas on-move-change]}] 
   (let [t (js/headtrackr.Tracker. #js {:ui false :debug canvas})]
     (.init t video canvas)
 

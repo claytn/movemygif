@@ -1,10 +1,7 @@
-const scratch = document.createElement("canvas");
-const scratchCtx = scratch.getContext("2d");
-
 const THRESHOLD = 100;
-const PLAY = "play",
-  REWIND = "rewind",
-  PAUSE = "pause";
+const PLAY = "play";
+const REWIND = "rewind";
+const PAUSE = "pause";
 
 function timeoutWithRejection(ms) {
   return new Promise((_, reject) => {
@@ -14,21 +11,6 @@ function timeoutWithRejection(ms) {
 
 function waitForOpencv(waitTimeMs = 30000) {
   return Promise.race([cv, timeoutWithRejection(waitTimeMs)]);
-}
-
-const constraints = {
-  audio: false,
-  video: { width: 640, height: 480 },
-};
-
-function streamVideo(video) {
-  return navigator.mediaDevices
-    .getUserMedia(constraints)
-    .then(stream => {
-      video.srcObject = stream;
-      video.play();
-    })
-    .catch(error => console.log("Error fetching video stream: ", error));
 }
 
 function grayScale(cv, image) {
@@ -44,30 +26,61 @@ function blur(cv, image) {
   return dst;
 }
 
-function detectMovement(cv, video, canvas, onMoveChange) {
-  let lastFrame = null;
-  let lastArea = null;
+export class ContourTracker {
+  constructor({ video, canvas, onMoveChange }) {
+    this.cv = null;
+    this.scratch = document.createElement("canvas");
+    this.scratchCtx = this.scratch.getContext("2d");
+    this.previousArea = null;
+    this.previousFrame = null;
 
-  return setInterval(() => {
-    scratchCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    this.video = video;
+    this.canvas = canvas;
+    this.onMoveChange = onMoveChange;
+  }
 
-    const src = cv.imread(scratch);
+  streamVideo() {
+    // Stream camera feed to video element
+    const constraints = {
+      audio: false,
+      video: { width: 640, height: 480 },
+    };
+
+    return navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(stream => {
+        this.video.srcObject = stream;
+        this.video.play();
+      })
+      .catch(error => console.log("Error fetching video stream: ", error));
+  }
+
+  captureImage() {
+    this.scratchCtx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  detectMovement() {
+    this.captureImage();
+
+    const cv = this.cv;
+    const src = cv.imread(this.scratch);
     const blurred = blur(cv, src);
     const grayed = grayScale(cv, blurred);
     const morphed = grayed;
 
-    if (!lastFrame) {
-      lastFrame = new cv.Mat();
-      morphed.copyTo(lastFrame);
+    if (!this.previousFrame) {
+      this.previousFrame = new cv.Mat();
+      morphed.copyTo(this.previousFrame);
     }
 
     const delta = new cv.Mat();
-    cv.absdiff(morphed, lastFrame, delta);
+    cv.absdiff(morphed, this.previousFrame, delta);
 
     const thresh = new cv.Mat();
     cv.threshold(delta, thresh, 25, 255, cv.THRESH_BINARY);
 
-    cv.imshow(canvas, thresh);
+    // TODO: ONLY PERFORM THIS ACTION IN DEBUG MODE.
+    cv.imshow(this.canvas, thresh);
 
     const contours = new cv.MatVector();
     const hierarchy = new cv.Mat();
@@ -82,33 +95,38 @@ function detectMovement(cv, video, canvas, onMoveChange) {
       }
     }
 
-    if (lastArea) {
+    if (this.previousArea) {
       let move = null;
-      if (maxArea - lastArea > THRESHOLD) {
+      if (maxArea - this.previousArea > THRESHOLD) {
         move = PLAY;
-      } else if (lastArea - maxArea > THRESHOLD) {
+      } else if (this.previousArea - maxArea > THRESHOLD) {
         move = REWIND;
       } else {
         move = PAUSE;
       }
 
-      onMoveChange(move);
+      this.onMoveChange(move);
     }
 
-    lastArea = maxArea;
-  }, 100);
-}
+    this.previousArea = maxArea;
+  }
 
-export function start(video, canvas, onMoveChange) {
-  return streamVideo(video)
-    .then(
-      () =>
-        new Promise(res => {
-          console.log("Calibrating...");
-          setTimeout(res, 2000);
-        })
-    )
-    .then(() => waitForOpencv(30000))
-    .then(cv => detectMovement(cv, video, canvas, onMoveChange))
-    .catch(err => console.log("ouch an error ", err));
+  start() {
+    this.streamVideo()
+      // Allow video to start streaming
+      .then(() => new Promise(res => setTimeout(res, 2000)))
+      .then(() => waitForOpencv(30000))
+      .then(cv => {
+        this.cv = cv;
+      })
+      .then(() => {
+        this.interval = setInterval(() => {
+          this.detectMovement();
+        }, 100);
+      });
+  }
+
+  stop() {
+    clearInterval(this.interval);
+  }
 }
