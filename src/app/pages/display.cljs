@@ -7,34 +7,63 @@
    [app.trackers.head :as htracker]
    [app.trackers.contour :as ctracker]))
 
-(declare display gif-frames gif-url)
+;;  const windowHeight = window.innerHeight;
+;;     const windowWidth = window.innerWidth;
+;;     if (windowHeight < windowWidth) {
+;;       c.height = windowHeight;
+;;       c.width = (windowHeight * gifWidth) / gifHeight;
+;;     } else {
+;;       c.width = windowWidth;
+;;       c.height = (windowWidth * gifHeight) / gifWidth;
+;;     }
 
-(defnc display [{:keys [gif-frames gif-url]}]
-  (let [canvas-ref (hooks/use-ref nil)
-        video-ref (hooks/use-ref nil)
+(defn fit-image-to-screen! [img]
+  (let [window-height (.-innerHeight js/window)
+        window-width (.-innerWidth js/window)
+        default-width (.-width img)
+        default-height (.-height img)]
+    
+    (if (< window-height window-width)
+      
+      (do 
+        (set! (.-height img) window-height)
+        (set! (.-width img) (/ (* window-height default-width) default-height)))
+      
+      (do 
+        (set! (.-width img) window-width)
+        (set! (.-height img) (/ (* window-width default-height) default-width))))))
+
+(declare display gif-url)
+
+(defnc display [{:keys [gif-url]}]
+  (let [video-ref (hooks/use-ref nil)
         scratch-ref (hooks/use-ref nil)
+        image-ref (hooks/use-ref nil)
+        [gp set-gp!] (hooks/use-state nil)
         [debugging set-debugging!] (hooks/use-state false)
         [tracker set-tracker!] (hooks/use-state :head)
         [sizing set-sizing!] (hooks/use-state :default)
         [tracking set-tracking!] (hooks/use-state false)
-        start-tracking! (fn []
-                          (let [gp (gif/create-gif-player {:frames gif-frames :canvas (.-current canvas-ref) :fit-to-screen? (= sizing :fit-to-screen)})
-                                start! (if (= tracker :head) htracker/start! ctracker/start!)]
-                            (.start gp)
+        start-tracking! (fn [] 
+                          (gif/pause! gp)
+                          (let [start! (if (= tracker :head) htracker/start! ctracker/start!)]
                             (start! {:video (.-current video-ref)
                                      :canvas (.-current scratch-ref)
                                      :on-move-change (fn [move]
                                                        (case (keyword move)
-                                                         :play (.play gp)
-                                                         :rewind (.rewind gp)
-                                                         :pause (.pause gp)))}))
+                                                         :play (gif/play! gp)
+                                                         :rewind (gif/rewind! gp)
+                                                         :pause (gif/pause! gp)))}))
                           (set-tracking! true))]
+    
+    (hooks/use-effect
+     :once 
+     (let [gif-player (gif/create-gif-player! {:url gif-url :image (.-current image-ref)})]
+       (set-gp! gif-player)))
 
     (d/div {:style {:display "flex" :flex-direction "row"}}
 
-           (d/canvas {:id "gif-display" :ref canvas-ref :style {:display (if tracking "block" "none")}})
-           (if (not tracking)
-             (d/img {:src gif-url :width 500 :height 500}))
+           (d/img {:ref image-ref :rel:auto_play "1" :rel:rubbable "1"})
 
            (d/div {:style {:display "flex" :flex-direction "column"}}
 

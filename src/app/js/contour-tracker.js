@@ -33,6 +33,7 @@ export class ContourTracker {
     this.scratchCtx = this.scratch.getContext("2d");
     this.previousArea = null;
     this.previousFrame = null;
+    this.previousMove = null;
 
     this.video = video;
     this.canvas = canvas;
@@ -105,7 +106,10 @@ export class ContourTracker {
         move = PAUSE;
       }
 
-      this.onMoveChange(move);
+      if (this.previousMove !== move) {
+        this.onMoveChange(move);
+        this.previousMove = move;
+      }
     }
 
     this.previousArea = maxArea;

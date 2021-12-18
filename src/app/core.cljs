@@ -9,8 +9,7 @@
 
 (declare app)
 (defnc app []
-  (let [[frames set-frames!] (hooks/use-state nil)
-        [url set-url!] (hooks/use-state nil)]
+  (let [[url set-url!] (hooks/use-state nil)]
 
     (d/div
      (d/div
@@ -20,12 +19,11 @@
 
      ;; When GIF loaded, show display page. Otherwise, assume search page
      ;; A+ routing if you ask me
-     (if frames
-       ($ display {:gif-frames frames :gif-url url})
+     (if url
+       ($ display {:gif-url url})
 
-       ($ search {:handle-selection! (fn [gm]
-                                       (set-frames! (:frames gm))
-                                       (set-url! (:url gm)))})))))
+       ($ search {:handle-selection! (fn [url]
+                                       (set-url! url))})))))
 
 (defn ^:dev/after-load start []
   (rdom/render ($ app) (js/document.getElementById "app")))

@@ -1,4 +1,6 @@
 (ns app.trackers.head)
+;; Please don't judge me, I'm not proud of this
+;; I promise I'll fix it later.
 
 (def tracker (atom nil))
 
@@ -40,11 +42,6 @@
        (not closer))
       :pause)))
 
-(defn handle-direction-change! [new-depth]
-  (let [next-motion (get-next-action @depth new-depth)]
-    (reset! motion next-motion)
-    (reset! depth new-depth)))
-
 (defn handle-detection
   "Given a detection adds the z-index of the detected source
    to the movements vector. Once the movements vector reaches
@@ -55,11 +52,15 @@
         pos (.-z detection)]
     (if (= (count mvs) MOVEMENT_BUF_SIZE)
       ;; Dispatch a movment update based on the median of the last X moves
-      (let [smoothed-depth (median mvs)]
-        (handle-direction-change! smoothed-depth)
+      (let [smoothed-depth (median mvs)
+            next-motion (get-next-action @depth smoothed-depth)]
 
-        (on-move-change @motion)
+        (if (not= next-motion @motion)
+          (do
+            (on-move-change next-motion)
+            (reset! motion next-motion)))
 
+        (reset! depth smoothed-depth)
         (reset! movements []))
 
       (swap! movements conj pos))))

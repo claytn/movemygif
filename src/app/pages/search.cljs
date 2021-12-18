@@ -15,14 +15,7 @@
   (let [[search set-search!] (hooks/use-state "")
         [error set-error!] (hooks/use-state nil)
         load-gif! (fn [url]
-                    (-> url
-                        gif/fetch-gif
-                        (.then (fn [frames]
-                                 (set-error! nil)
-                                 (handle-selection! {:url url :frames frames})))
-                        (.catch (fn [err]
-                                  (println err)
-                                  (set-error! "We had trouble loading this GIF for motion detection. Please try another GIF.")))))]
+                    (handle-selection! url))]
 
     (hooks/use-effect
      []
@@ -60,4 +53,6 @@
                (d/p {:class "error"} "Error fetching gif. Try another URL."))
 
              (d/p "Don't want to go find a GIF? Copy this URL to test it out:")
-             (d/a {:href "https://media.giphy.com/media/3o7buijTqhjxjbEqjK/giphy.gif"} "https://media.giphy.com/media/3o7buijTqhjxjbEqjK/giphy.gif"))))))
+             (d/a {:href "https://media.giphy.com/media/3o7buijTqhjxjbEqjK/giphy.gif"} "https://media.giphy.com/media/3o7buijTqhjxjbEqjK/giphy.gif")
+             (d/br)
+             (d/a {:href "https://media.giphy.com/media/k2wSW3qZunETTq63e9/giphy.gif"} "https://media.giphy.com/media/k2wSW3qZunETTq63e9/giphy.gif"))))))
