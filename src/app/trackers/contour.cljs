@@ -3,5 +3,7 @@
 
 (defn start! [{:keys [video canvas on-move-change]}]
   (let [t (ContourTracker. #js {:video video :canvas canvas :onMoveChange on-move-change})]
-    (.start t)))
+    (-> (.start t)
+        (.catch (fn [err]
+                  (js/alert (.-message err)))))))
 

@@ -12,11 +12,6 @@
   (let [[url set-url!] (hooks/use-state nil)]
 
     (d/div
-     (d/div
-      {:style {:position "absolute" :right 10 :top 5}}
-      (d/p  "movemygif v0.3")
-      (d/a {:href "https://github.com/claytn/movemygif" :style {:float "right"}} "source"))
-
      ;; When GIF loaded, show display page. Otherwise, assume search page
      ;; A+ routing if you ask me
      (if url

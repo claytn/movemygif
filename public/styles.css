@@ -3,18 +3,18 @@ body {
   margin: 0;
 }
 
-canvas#gif-display {
-  padding-left: 0;
-  padding-right: 0;
-  display: block;
-}
-
-.interaction-tools {
-  width: 800px;
+.search-container {
+  max-width: 800px;
   margin-top: 10%;
   margin-left: auto;
   margin-right: auto;
   display: block;
+}
+
+@media only screen and (max-width: 800px) {
+  .search-container {
+    max-width: 90%;
+  }
 }
 
 .settings-section-header {
@@ -36,10 +36,6 @@ canvas#gif-display {
   margin-right: auto;
   padding: 0;
   min-width: 80%;
-}
-
-.search-icon {
-  padding: 5px 15px 5px 5px;
 }
 
 .gif-search {
@@ -81,12 +77,4 @@ canvas#gif-display {
   position: absolute;
   right: 0;
   bottom: 0;
-}
-
-#action {
-  color: white;
-}
-
-.off {
-  display: none;
 }

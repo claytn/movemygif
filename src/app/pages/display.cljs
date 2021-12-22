@@ -7,31 +7,6 @@
    [app.trackers.head :as htracker]
    [app.trackers.contour :as ctracker]))
 
-;;  const windowHeight = window.innerHeight;
-;;     const windowWidth = window.innerWidth;
-;;     if (windowHeight < windowWidth) {
-;;       c.height = windowHeight;
-;;       c.width = (windowHeight * gifWidth) / gifHeight;
-;;     } else {
-;;       c.width = windowWidth;
-;;       c.height = (windowWidth * gifHeight) / gifWidth;
-;;     }
-
-(defn fit-image-to-screen! [img]
-  (let [window-height (.-innerHeight js/window)
-        window-width (.-innerWidth js/window)
-        default-width (.-width img)
-        default-height (.-height img)]
-    
-    (if (< window-height window-width)
-      
-      (do 
-        (set! (.-height img) window-height)
-        (set! (.-width img) (/ (* window-height default-width) default-height)))
-      
-      (do 
-        (set! (.-width img) window-width)
-        (set! (.-height img) (/ (* window-width default-height) default-width))))))
 
 (declare display gif-url)
 
@@ -42,7 +17,6 @@
         [gp set-gp!] (hooks/use-state nil)
         [debugging set-debugging!] (hooks/use-state false)
         [tracker set-tracker!] (hooks/use-state :head)
-        [sizing set-sizing!] (hooks/use-state :default)
         [tracking set-tracking!] (hooks/use-state false)
         start-tracking! (fn [] 
                           (gif/pause! gp)
@@ -76,8 +50,8 @@
                                    (d/p
                                     {:class "settings-description"}
                                     "Determines the method to track movement in camera. Unsure which to choose? Test out both! 
-                               Typically, the head tracker will work best for long-term use, but it's reaction time is slow.
-                               The contour tracker won't perform well overtime as the background changes subtly, but is much quicker to detect movement.")
+                               Typically, the head tracker will work best for long-term use, but it requires good lighting and isn't as snappy as the contour tracker.
+                               The contour tracker won't perform well overtime as the background changes subtly, but is much quicker to detect movement in the short-term.")
                                    (d/div
                                     (d/label {:for "head-tracker"} "Head tracker")
                                     (d/input {:type "radio" :name "head-tracker" :on-change #(set-tracker! :head) :checked (= tracker :head)})
@@ -88,16 +62,7 @@
                                    (d/h3 {:class "settings-section-header"} "Debugging:")
                                    (d/p {:class "settings-description"} "Want to see what's being tracked? Turn on debugging options!")
                                    (d/label {:for "head-tracker"} "Debugger Enabled")
-                                   (d/input {:type "radio" :name "debug" :on-click #(set-debugging! not) :on-change (fn []) :checked debugging})
-
-                                   (d/h3 {:class "settings-section-header"} "Display Size:")
-                                   (d/p {:class "settings-description"} "Determines the dimensions of the GIF displayed")
-                                   (d/div
-                                    (d/label {:for "fit-to-screen"} "Fit to screen")
-                                    (d/input {:type "radio" :name "fit-to-screen" :on-change #(set-sizing! :fit-to-screen) :checked (= sizing :fit-to-screen)})
-                                    (d/br)
-                                    (d/label {:for "default-size"} "Use default GIF size")
-                                    (d/input {:type "radio" :name "default-size" :on-change #(set-sizing! :default) :checked (= sizing :default)}))))
+                                   (d/input {:type "radio" :name "debug" :on-click #(set-debugging! not) :on-change (fn []) :checked debugging})))
 
                            (d/button {:class "btn"
                                       :style {:margin-top 10}

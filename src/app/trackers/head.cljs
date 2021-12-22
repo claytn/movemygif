@@ -1,12 +1,11 @@
-(ns app.trackers.head)
-;; Please don't judge me, I'm not proud of this
-;; I promise I'll fix it later.
-
-(def tracker (atom nil))
+(ns app.trackers.head
+  (:require [app.constants :refer [CAMERA_NOT_FOUND_MESSAGE]]))
 
 (def MOVEMENT_BUF_SIZE 5)
 (def FROM_PAUSE_THRESHOLD 1)
 (def FROM_MOVE_THRESHOLD 1)
+
+;; TODO: MAKE ALL THIS INTERNAL STATE TO THE start! function (aka I should be able to start two separate head trackers)
 
 (def motion (atom :pause))
 
@@ -65,18 +64,27 @@
 
       (swap! movements conj pos))))
 
-(defn start! [{:keys [video canvas on-move-change]}] 
+(defn camera-not-found []
+  (js/alert CAMERA_NOT_FOUND_MESSAGE))
+
+(defn start! [{:keys [video canvas on-move-change]}]
   (let [t (js/headtrackr.Tracker. #js {:ui false :debug canvas})]
     (.init t video canvas)
 
     (.addEventListener
-       js/document
-       "headtrackingEvent"
-       #(handle-detection
-         %
-         on-move-change))
-    
-    (.start t)
+     js/document
+     "headtrackrStatus"
+     (fn [evt]
+       (let [status (.-status evt)]
+         (if (or (= status "no camera") (= status "no getUserMedia"))
+           (camera-not-found)))))
 
-    (reset! tracker t)))
+    (.addEventListener
+     js/document
+     "headtrackingEvent"
+     #(handle-detection
+       %
+       on-move-change))
+
+    (.start t)))
 

@@ -53,7 +53,12 @@ export class ContourTracker {
         this.video.srcObject = stream;
         this.video.play();
       })
-      .catch(error => console.log("Error fetching video stream: ", error));
+      .catch(err => {
+        console.error("[contour-tracker streamVideo] ", err);
+        throw new Error(
+          "Could not access user's camera. Please be sure you have a web camera connected and enable this website to access it. Refresh page once completed."
+        );
+      });
   }
 
   captureImage() {
@@ -116,21 +121,19 @@ export class ContourTracker {
   }
 
   start() {
-    this.streamVideo()
-      // Allow video to start streaming
-      .then(() => new Promise(res => setTimeout(res, 2000)))
-      .then(() => waitForOpencv(30000))
-      .then(cv => {
-        this.cv = cv;
-      })
-      .then(() => {
-        this.interval = setInterval(() => {
-          this.detectMovement();
-        }, 100);
-      });
-  }
-
-  stop() {
-    clearInterval(this.interval);
+    return (
+      this.streamVideo()
+        // Allow video to start streaming
+        .then(() => new Promise(res => setTimeout(res, 2000)))
+        .then(() => waitForOpencv(30000))
+        .then(cv => {
+          this.cv = cv;
+        })
+        .then(() => {
+          this.interval = setInterval(() => {
+            this.detectMovement();
+          }, 100);
+        })
+    );
   }
 }
