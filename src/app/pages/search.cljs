@@ -29,10 +29,10 @@
            (set-search! gif-url)
            (load-gif! gif-url)
            (set-error! nil)))))
-    (d/div
+    (d/div {:style {:width "100%"}}
      (d/div
       {:style {:position "absolute" :right 10 :top 5}}
-      (d/p  "movemygif v0.3")
+      (d/p  "movemygif v0.4")
       (d/a {:href "https://github.com/claytn/movemygif" :style {:float "right"}} "source"))
 
      (d/div

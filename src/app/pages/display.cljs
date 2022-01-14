@@ -35,9 +35,14 @@
      (let [gif-player (gif/create-gif-player! {:url gif-url :image (.-current image-ref)})]
        (set-gp! gif-player)))
 
-    (d/div {:style {:display "flex" :flex-direction "row"}}
+    (d/div {:style {:display "flex" 
+                    :flex 1 
+                    :flex-direction "row" 
+                    :justify-content (if tracking "center" "flex-start")
+                    :background (if (and tracking (not debugging)) "#000" "inherit")}}
 
-           (d/img {:ref image-ref :rel:auto_play "1" :rel:rubbable "1"})
+           (d/div {:style {:margin-top (if tracking "10%" "0")}}
+            (d/img {:ref image-ref :rel:auto_play "1" :rel:rubbable "1"}))
 
            (d/div {:style {:display "flex" :flex-direction "column"}}
 

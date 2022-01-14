@@ -6,14 +6,12 @@
     "start": "shadow-cljs watch app",
     "repl": "shadow-cljs cljs-repl app",
     "test": "shadow-cljs compile test",
-    "build": "shadow-cljs compile app"
+    "build": "shadow-cljs release app"
   },
   "devDependencies": {
     "shadow-cljs": "2.15.10"
   },
   "dependencies": {
-    "face-api.js": "^0.22.2",
-    "gifuct-js": "^2.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-refresh": "0.8.1"

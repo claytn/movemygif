@@ -101,20 +101,18 @@ export class ContourTracker {
       }
     }
 
-    if (this.previousArea) {
-      let move = null;
-      if (maxArea - this.previousArea > THRESHOLD) {
-        move = PLAY;
-      } else if (this.previousArea - maxArea > THRESHOLD) {
-        move = REWIND;
-      } else {
-        move = PAUSE;
-      }
+    let move = null;
+    if (maxArea - this.previousArea > THRESHOLD) {
+      move = PLAY;
+    } else if (this.previousArea - maxArea > THRESHOLD) {
+      move = REWIND;
+    } else {
+      move = PAUSE;
+    }
 
-      if (this.previousMove !== move) {
-        this.onMoveChange(move);
-        this.previousMove = move;
-      }
+    if (this.previousMove !== move) {
+      this.onMoveChange(move);
+      this.previousMove = move;
     }
 
     this.previousArea = maxArea;
