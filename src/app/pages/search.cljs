@@ -12,7 +12,6 @@
     false
     (re-matches url-pattern url)))
 
-(declare search handle-selection!)
 (defnc search [{:keys [handle-selection!]}]
   (let [[search set-search!] (hooks/use-state "")
         [error set-error!] (hooks/use-state nil)
@@ -32,7 +31,7 @@
     (d/div {:style {:width "100%"}}
      (d/div
       {:style {:position "absolute" :right 10 :top 5}}
-      (d/p  "movemygif v0.4")
+      (d/p  "movemygif v1.0")
       (d/a {:href "https://github.com/claytn/movemygif" :style {:float "right"}} "source"))
 
      (d/div

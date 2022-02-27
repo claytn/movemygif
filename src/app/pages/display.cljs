@@ -17,7 +17,7 @@
         image-ref (hooks/use-ref nil)
         [gp set-gp!] (hooks/use-state nil)
         [debugging set-debugging!] (hooks/use-state false)
-        [tracker set-tracker!] (hooks/use-state :head)
+        [tracker set-tracker!] (hooks/use-state :person)
         [tracking set-tracking!] (hooks/use-state false)
         start-tracking! (fn [] 
                           (gif/pause! gp)
@@ -45,7 +45,7 @@
                     :justify-content (if tracking "center" "flex-start")
                     :background (if (and tracking (not debugging)) "#000" "inherit")}}
 
-           (d/div {:style {:margin-top (if tracking "10%" "0")}}
+           (d/div {:style {:margin-top (if tracking "5%" "0")}}
             (d/img {:ref image-ref :rel:auto_play "1" :rel:rubbable "1"}))
 
            (d/div {:style {:display "flex" :flex-direction "column"}}
