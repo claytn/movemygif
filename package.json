@@ -12,6 +12,11 @@
     "shadow-cljs": "2.15.10"
   },
   "dependencies": {
+    "@tensorflow-models/coco-ssd": "^2.2.2",
+    "@tensorflow/tfjs-backend-cpu": "^3.13.0",
+    "@tensorflow/tfjs-backend-webgl": "^3.13.0",
+    "@tensorflow/tfjs-converter": "^3.13.0",
+    "@tensorflow/tfjs-core": "^3.13.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-refresh": "0.8.1"

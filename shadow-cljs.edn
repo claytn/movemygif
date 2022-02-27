@@ -14,4 +14,4 @@
                 :modules {:main {:init-fn app.core/init}}
                 :devtools {:http-root "public"
                            :http-port 3000}
-                :compiler-options {:infer-externs :auto}}}}
+                :compiler-options {:optimizations :simple}}}}

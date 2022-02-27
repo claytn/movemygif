@@ -5,7 +5,8 @@
    [helix.dom :as d]
    [app.gif :as gif]
    [app.trackers.head :as htracker]
-   [app.trackers.contour :as ctracker]))
+   [app.trackers.contour :as ctracker]
+   [app.trackers.person :as ptracker]))
 
 
 (declare display gif-url)
@@ -20,7 +21,10 @@
         [tracking set-tracking!] (hooks/use-state false)
         start-tracking! (fn [] 
                           (gif/pause! gp)
-                          (let [start! (if (= tracker :head) htracker/start! ctracker/start!)]
+                          (let [start! (case tracker
+                                         :head htracker/start!
+                                         :contour ctracker/start!
+                                         :person ptracker/start!)]
                             (start! {:video (.-current video-ref)
                                      :canvas (.-current scratch-ref)
                                      :on-move-change (fn [move]
@@ -62,7 +66,10 @@
                                     (d/input {:type "radio" :name "head-tracker" :on-change #(set-tracker! :head) :checked (= tracker :head)})
                                     (d/br)
                                     (d/label {:for "contour-tracker"} "Contour tracker")
-                                    (d/input {:type "radio" :name "contour-tracker" :on-change #(set-tracker! :contour) :checked (= tracker :contour)}))
+                                    (d/input {:type "radio" :name "contour-tracker" :on-change #(set-tracker! :contour) :checked (= tracker :contour)})
+                                    (d/br)
+                                    (d/label {:for "person-tracker"} "Person tracker")
+                                    (d/input {:type "radio" :name "person-tracker" :on-change #(set-tracker! :person) :checked (= tracker :person)}))
 
                                    (d/h3 {:class "settings-section-header"} "Debugging:")
                                    (d/p {:class "settings-description"} "Want to see what's being tracked? Turn on debugging options!")
